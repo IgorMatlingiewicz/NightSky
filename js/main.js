@@ -10,7 +10,8 @@ class Sky {
             stars: [],
             isClosed: false,
             width: null,
-        }
+        };
+        this.lastUpdate = 0;
     }
 
     initCanvas() {
@@ -25,6 +26,18 @@ class Sky {
         let stars = [];
 
         for(let i = 0; i < count; i++) {
+            let colorNumber = Math.floor(Math.random() * 4) + 1
+            let color ="#fff"
+            if (colorNumber == 1) {
+                color = "#00F3FE"
+            } else if (colorNumber == 2) {
+                color = "#F3318F"
+            } else if (colorNumber == 3) {
+                color = "#FDD554"
+            } else {
+                color = "#00E65B"
+            }
+
             const radius = Math.random() * 3 + 2
 
             stars.push({
@@ -32,7 +45,7 @@ class Sky {
                 y: Math.random() * this.height,
                 radius: radius,
                 originalRadius: radius,
-                color: '#fff',
+                color: color,
                 speed: Math.random() + 0.25,
             })
         }
@@ -48,7 +61,7 @@ class Sky {
 
     updateStars() {
         this.stars.forEach(star => {
-            star.x += star.speed;
+            star.x += star.speed * (this.delta / 16);
             star.y -= star.speed * ((this.width / 2) - star.x) / 2500;
             star.radius = star.originalRadius * (Math.random() / 4 + 1);
 
@@ -145,6 +158,7 @@ class Sky {
     }
 
     draw(now) {
+        this.delta = now - this.lastUpdate;
         this.clearCanvas();
 
         this.drawStars();
@@ -161,19 +175,15 @@ class Sky {
             this.generateRandomConstellation();
         }
 
+        this.lastUpdate = now;
+
         window.requestAnimationFrame((now) => this.draw(now));
     }
 
     run() {
         this.initCanvas();
         this.generateStars(500);
-        this.draw();
-        // this.drawStar({
-        //     x: 100,
-        //     y: 100,
-        //     color: '#fff',
-        //     radius: 100,
-        // })
+        this.draw(0);
     }
 }
 
